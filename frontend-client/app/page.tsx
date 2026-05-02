@@ -34,7 +34,7 @@ export default async function Home() {
     return (
         <main className="mx-auto flex min-h-full max-w-lg flex-col gap-6 px-6 py-16">
             <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                Companies - base url: {process.env.API_URL} - feature/1
+                Companies - base url: {process.env.API_URL} - main
             </h1>
             {error ? (
                 <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
