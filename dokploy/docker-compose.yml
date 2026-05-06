@@ -1,0 +1,96 @@
+# Stack monorepo para Dokploy + infra compartilhada (dokploy-manager: infra/shared).
+#
+# Variáveis injetadas pelo dokploy-manager (`env:up`): INSTANCE_HOST, INSTANCE_URL, APP_URL,
+# NEXT_PUBLIC_API_URL (https://api.INSTANCE_HOST), ADMIN_URL (https://admin.INSTANCE_HOST).
+# BASE_DOMAIN só existe no .env do dokploy-manager; não é passado a esta stack.
+#
+# Traefik:
+#   api.${INSTANCE_HOST}    → Laravel
+#   admin.${INSTANCE_HOST} → Laravel (mesmo backend; use ADMIN_URL na app)
+#   app.${INSTANCE_HOST}   → Next.js
+
+name: monorepo
+
+services:
+  api-php:
+    build:
+      context: .
+      dockerfile: Dockerfile.api-php
+    container_name: monorepo-api-php
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ../api-laravel:/var/www/html
+    environment:
+      APP_NAME: ${APP_NAME:-Laravel}
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_KEY: ${APP_KEY}
+      APP_URL: ${APP_URL}
+      INSTANCE_HOST: ${INSTANCE_HOST}
+      INSTANCE_URL: ${INSTANCE_URL}
+      ADMIN_URL: ${ADMIN_URL}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stderr}
+      DB_CONNECTION: ${DB_CONNECTION:-mysql}
+      DB_HOST: ${DB_HOST:-infra-shared-mysql}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - shared_network_db
+      - dokploy_internal
+
+  api-nginx:
+    image: nginx:alpine
+    container_name: monorepo-api-nginx
+    restart: unless-stopped
+    volumes:
+      - ../api-laravel:/var/www/html:ro
+      - ./nginx/laravel.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api-php
+    networks:
+      - shared_network_web
+      - dokploy_internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=shared_network_web"
+      - "traefik.http.routers.monorepo-api.rule=Host(`api.${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-api.entrypoints=web"
+      - "traefik.http.routers.monorepo-api.service=monorepo-api-php-svc"
+      - "traefik.http.routers.monorepo-admin.rule=Host(`admin.${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-admin.entrypoints=web"
+      - "traefik.http.routers.monorepo-admin.service=monorepo-api-php-svc"
+      - "traefik.http.services.monorepo-api-php-svc.loadbalancer.server.port=80"
+
+  frontend-node:
+    image: node:22-alpine
+    container_name: monorepo-frontend-node
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ../frontend-client:/app
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    command: sh -c "npm ci && npm run build && ./node_modules/.bin/next start -H 0.0.0.0 -p 3000"
+    networks:
+      - shared_network_web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=shared_network_web"
+      - "traefik.http.routers.monorepo-frontend.rule=Host(`app.${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend.entrypoints=web"
+      - "traefik.http.services.monorepo-frontend.loadbalancer.server.port=3000"
+
+networks:
+  shared_network_db:
+    external: true
+    name: shared_network_db
+  shared_network_web:
+    external: true
+    name: shared_network_web
+  dokploy_internal:
+    driver: bridge
