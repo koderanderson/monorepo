@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api-php
-    container_name: monorepo-api-php
+    container_name: ${INSTANCE_HOST}-api-php
     restart: unless-stopped
     working_dir: /app
     volumes:
@@ -33,7 +33,7 @@ services:
 
   api-nginx:
     image: nginx:alpine
-    container_name: monorepo-api-nginx
+    container_name: ${INSTANCE_HOST}-api-nginx
     restart: unless-stopped
     volumes:
       - ../api-laravel:/app:ro
@@ -55,7 +55,7 @@ services:
 
   frontend-node:
     image: node:22-alpine
-    container_name: monorepo-frontend-node
+    container_name: ${INSTANCE_HOST}-frontend
     restart: unless-stopped
     working_dir: /app
     volumes:
