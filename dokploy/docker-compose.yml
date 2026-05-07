@@ -8,9 +8,9 @@ services:
       dockerfile: Dockerfile.api-php
     container_name: monorepo-api-php
     restart: unless-stopped
-    working_dir: /var/www/html
+    working_dir: /app
     volumes:
-      - ../api-laravel:/var/www/html
+      - ../api-laravel:/app
     environment:
       APP_NAME: ${APP_NAME:-Laravel}
       APP_ENV: ${APP_ENV:-production}
@@ -36,7 +36,7 @@ services:
     container_name: monorepo-api-nginx
     restart: unless-stopped
     volumes:
-      - ../api-laravel:/var/www/html:ro
+      - ../api-laravel:/app:ro
       - ./nginx/laravel.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - api-php

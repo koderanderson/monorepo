@@ -15,7 +15,7 @@ RUN apk add --no-cache icu-libs libzip \
 COPY docker-entrypoint-api.sh /usr/local/bin/docker-entrypoint-api.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint-api.sh
 
-WORKDIR /var/www/html
+WORKDIR /app
 
 ENTRYPOINT ["docker-entrypoint-api.sh"]
 CMD ["php-fpm"]
