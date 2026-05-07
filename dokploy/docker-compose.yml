@@ -45,10 +45,12 @@ services:
       - dokploy_internal
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dokploy-network"
-      - "traefik.http.routers.monorepo-api-http.rule=Host(`api-${INSTANCE_HOST:-api.monorepo.koder.test}`)"
-      - "traefik.http.routers.monorepo-api-http.entrypoints=web"
-      - "traefik.http.routers.monorepo-api-http.service=monorepo-api-php-svc"
+      - "traefik.http.routers.monorepo-api-web.rule=Host(`api-${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-api-web.entrypoints=web"
+      - "traefik.http.routers.monorepo-api-websecure.rule=HostHost(`api-${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-api-websecure.entrypoints=websecure"
+      - "traefik.http.routers.monorepo-api-web.service=monorepo-api-php-svc"
+      - "traefik.http.routers.monorepo-api-websecure.service=monorepo-api-php-svc"
       - "traefik.http.services.monorepo-api-php-svc.loadbalancer.server.port=80"
 
   frontend-node:
@@ -66,11 +68,14 @@ services:
       - dokploy-network
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dokploy-network"
-      - "traefik.http.routers.monorepo-frontend-http.rule=Host(`${INSTANCE_HOST:-monorepo.koder.test}`)"
-      - "traefik.http.routers.monorepo-frontend-http.entrypoints=web"
-      - "traefik.http.routers.monorepo-frontend-http.service=monorepo-frontend-svc"
+      - "traefik.http.routers.monorepo-frontend-web.rule=HostHost(`${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend-web.entrypoints=web"
+      - "traefik.http.routers.monorepo-frontend-web.service=monorepo-frontend-svc"
+      - "traefik.http.routers.monorepo-frontend-websecure.rule=HostHost(`${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend-websecure.entrypoints=websecure"
+      - "traefik.http.routers.monorepo-frontend-websecure.service=monorepo-frontend-svc"
       - "traefik.http.services.monorepo-frontend-svc.loadbalancer.server.port=3000"
+  
 
 networks:
   dokploy-network:
