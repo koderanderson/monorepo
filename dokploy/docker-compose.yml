@@ -45,7 +45,7 @@ services:
       - dokploy_internal
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=shared_network_web"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.routers.monorepo-api-http.rule=Host(`api-${INSTANCE_HOST:-api.monorepo.koder.test}`)"
       - "traefik.http.routers.monorepo-api-http.entrypoints=web"
       - "traefik.http.routers.monorepo-api-http.service=monorepo-api-php-svc"
@@ -66,7 +66,7 @@ services:
       - dokploy-network
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=shared_network_web"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.routers.monorepo-frontend-http.rule=Host(`${INSTANCE_HOST:-monorepo.koder.test}`)"
       - "traefik.http.routers.monorepo-frontend-http.entrypoints=web"
       - "traefik.http.routers.monorepo-frontend-http.service=monorepo-frontend-svc"
