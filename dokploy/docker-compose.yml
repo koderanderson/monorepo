@@ -2,39 +2,6 @@ name: monorepo
 
 services:
 
-  # traefik:
-  #   image: traefik:v3.1
-  #   container_name: monorepo-traefik
-  #   restart: unless-stopped
-  #   networks:
-  #     - shared_network_web
-  #     - dokploy_internal
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.docker.network=shared_network_web"
-  #     - "traefik.http.routers.monorepo-traefik-dashboard.rule=Host(`traefik.${INSTANCE_HOST:-koder.test}`)"
-  #     - "traefik.http.routers.monorepo-traefik-dashboard.entrypoints=web"
-  #     - "traefik.http.routers.monorepo-traefik-dashboard.service=api@internal"
-  #   ports:
-  #     - "80:80"
-  #     - "8080:8080"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - ./data/traefik-logs:/var/log/traefik
-  #   command:
-  #     - "--log.level=INFO"
-  #     - "--accesslog=true"
-  #     - "--accesslog.filepath=/var/log/traefik/access.log"
-  #     - "--api.dashboard=true"
-  #     - "--api.insecure=true"
-  #     - "--entrypoints.web.address=:80"
-  #     - "--entrypoints.traefik.address=:8080"
-  #     - "--providers.docker=true"
-  #     - "--providers.docker.endpoint=unix:///var/run/docker.sock"
-  #     - "--providers.docker.exposedbydefault=false"
-  #     - "--providers.docker.network=shared_network_web"
-  #     - "--providers.docker.watch=true"
-
   api-php:
     build:
       context: .
@@ -61,7 +28,7 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
     networks:
-      - shared_network_db
+      - dokploy-network
       - dokploy_internal
 
   api-nginx:
@@ -74,7 +41,7 @@ services:
     depends_on:
       - api-php
     networks:
-      - shared_network_web
+      - dokploy-network
       - dokploy_internal
     labels:
       - "traefik.enable=true"
@@ -96,8 +63,7 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     command: sh -c "npm ci --include=dev && NODE_ENV=production npm run build && NODE_ENV=production exec ./node_modules/.bin/next start -H 0.0.0.0 -p 3000"
     networks:
-      - shared_network_web
-      - dokploy_internal
+      - dokploy-network
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=shared_network_web"
@@ -107,11 +73,8 @@ services:
       - "traefik.http.services.monorepo-frontend-svc.loadbalancer.server.port=3000"
 
 networks:
-  shared_network_db:
+  dokploy-network:
     external: true
-    name: shared_network_db
-  shared_network_web:
-    external: true
-    name: shared_network_web
+    name: dokploy-network
   dokploy_internal:
     driver: bridge
