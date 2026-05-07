@@ -62,7 +62,7 @@ services:
       - "traefik.http.routers.monorepo-api-https.rule=Host(`api-${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-api-https.entrypoints=websecure"
       - "traefik.http.routers.monorepo-api-https.tls=true"
-      - "traefik.http.routers.monorepo-api-https.tls.certresolver=le"
+      # - "traefik.http.routers.monorepo-api-https.tls.certresolver=le"
       - "traefik.http.routers.monorepo-api-https.service=monorepo-api-php-svc"
       - "traefik.http.services.monorepo-api-php-svc.loadbalancer.server.port=80"
 
@@ -88,7 +88,7 @@ services:
       - "traefik.http.routers.monorepo-frontend-https.rule=Host(`frontend-${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-frontend-https.entrypoints=websecure"
       - "traefik.http.routers.monorepo-frontend-https.tls=true"
-      - "traefik.http.routers.monorepo-frontend-https.tls.certresolver=le"
+      # - "traefik.http.routers.monorepo-frontend-https.tls.certresolver=le"
       - "traefik.http.routers.monorepo-frontend-https.service=monorepo-frontend-svc"
       - "traefik.http.services.monorepo-frontend-svc.loadbalancer.server.port=3000"
 
