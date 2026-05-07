@@ -1,3 +1,3 @@
 <?php
 
-echo date() . " - 1";
+echo date() . " - 2";
