@@ -2,6 +2,39 @@ name: monorepo
 
 services:
 
+  # traefik:
+  #   image: traefik:v3.1
+  #   container_name: monorepo-traefik
+  #   restart: unless-stopped
+  #   networks:
+  #     - shared_network_web
+  #     - dokploy_internal
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.docker.network=shared_network_web"
+  #     - "traefik.http.routers.monorepo-traefik-dashboard.rule=Host(`traefik.${INSTANCE_HOST:-koder.test}`)"
+  #     - "traefik.http.routers.monorepo-traefik-dashboard.entrypoints=web"
+  #     - "traefik.http.routers.monorepo-traefik-dashboard.service=api@internal"
+  #   ports:
+  #     - "80:80"
+  #     - "8080:8080"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - ./data/traefik-logs:/var/log/traefik
+  #   command:
+  #     - "--log.level=INFO"
+  #     - "--accesslog=true"
+  #     - "--accesslog.filepath=/var/log/traefik/access.log"
+  #     - "--api.dashboard=true"
+  #     - "--api.insecure=true"
+  #     - "--entrypoints.web.address=:80"
+  #     - "--entrypoints.traefik.address=:8080"
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     - "--providers.docker.network=shared_network_web"
+  #     - "--providers.docker.watch=true"
+
   api-php:
     build:
       context: .
@@ -17,7 +50,7 @@ services:
       APP_DEBUG: ${APP_DEBUG:-false}
       APP_KEY: ${APP_KEY}
       APP_URL: ${APP_URL}
-      INSTANCE_HOST: ${INSTANCE_HOST}
+      INSTANCE_HOST: ${INSTANCE_HOST:-monorepo.koder.test}
       INSTANCE_URL: ${INSTANCE_URL}
       ADMIN_URL: ${ADMIN_URL}
       LOG_CHANNEL: ${LOG_CHANNEL:-stderr}
@@ -46,7 +79,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=shared_network_web"
-      - "traefik.http.routers.monorepo-api-http.rule=Host(`api-${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-api-http.rule=Host(`api-${INSTANCE_HOST:-api.monorepo.koder.test}`)"
       - "traefik.http.routers.monorepo-api-http.entrypoints=web"
       - "traefik.http.routers.monorepo-api-http.service=monorepo-api-php-svc"
       - "traefik.http.services.monorepo-api-php-svc.loadbalancer.server.port=80"
@@ -68,7 +101,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=shared_network_web"
-      - "traefik.http.routers.monorepo-frontend-http.rule=Host(`${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend-http.rule=Host(`${INSTANCE_HOST:-monorepo.koder.test}`)"
       - "traefik.http.routers.monorepo-frontend-http.entrypoints=web"
       - "traefik.http.routers.monorepo-frontend-http.service=monorepo-frontend-svc"
       - "traefik.http.services.monorepo-frontend-svc.loadbalancer.server.port=3000"
