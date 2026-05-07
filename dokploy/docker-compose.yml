@@ -56,7 +56,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=shared_network_web"
-      - "traefik.http.routers.monorepo-api.rule=Host(`api.${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-api.rule=Host(`api-${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-api.entrypoints=web"
       - "traefik.http.routers.monorepo-api.service=monorepo-api-php-svc"
       - "traefik.http.services.monorepo-api-php-svc.loadbalancer.server.port=80"
