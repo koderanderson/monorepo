@@ -47,7 +47,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.monorepo-api-web.rule=Host(`api-${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-api-web.entrypoints=web"
-      - "traefik.http.routers.monorepo-api-websecure.rule=HostHost(`api-${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-api-websecure.rule=Host(`api-${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-api-websecure.entrypoints=websecure"
       - "traefik.http.routers.monorepo-api-web.service=monorepo-api-php-svc"
       - "traefik.http.routers.monorepo-api-websecure.service=monorepo-api-php-svc"
@@ -68,10 +68,10 @@ services:
       - dokploy-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.monorepo-frontend-web.rule=HostHost(`${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend-web.rule=Host(`${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-frontend-web.entrypoints=web"
       - "traefik.http.routers.monorepo-frontend-web.service=monorepo-frontend-svc"
-      - "traefik.http.routers.monorepo-frontend-websecure.rule=HostHost(`${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend-websecure.rule=Host(`${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-frontend-websecure.entrypoints=websecure"
       - "traefik.http.routers.monorepo-frontend-websecure.service=monorepo-frontend-svc"
       - "traefik.http.services.monorepo-frontend-svc.loadbalancer.server.port=3000"
