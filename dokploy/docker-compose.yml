@@ -72,10 +72,10 @@ services:
     volumes:
       - ../frontend-client:/app
     environment:
-      NODE_ENV: ${NODE_ENV:-production}
       HOSTNAME: "0.0.0.0"
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    command: sh -c "npm ci && npm run build && ./node_modules/.bin/next start -H 0.0.0.0 -p 3000"
+    # NODE_ENV=production durante só npm ci omite devDependencies (@tailwindcss/postcss é necessário no build).
+    command: sh -c "npm ci --include=dev && NODE_ENV=production npm run build && NODE_ENV=production exec ./node_modules/.bin/next start -H 0.0.0.0 -p 3000"
     networks:
       - shared_network_web
     labels:

@@ -1,6 +1,7 @@
 FROM php:8.3-fpm-alpine
 
-RUN apk add --no-cache icu-libs \
+# libzip: runtime (.so) for ext-zip; libzip-dev only during compile.
+RUN apk add --no-cache icu-libs libzip \
     && apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
         icu-dev \
@@ -11,4 +12,10 @@ RUN apk add --no-cache icu-libs \
     && apk add --no-cache bash curl git unzip \
     && curl -fsSL https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+COPY docker-entrypoint-api.sh /usr/local/bin/docker-entrypoint-api.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint-api.sh
+
 WORKDIR /var/www/html
+
+ENTRYPOINT ["docker-entrypoint-api.sh"]
+CMD ["php-fpm"]
