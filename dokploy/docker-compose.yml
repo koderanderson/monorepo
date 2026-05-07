@@ -59,9 +59,6 @@ services:
       - "traefik.http.routers.monorepo-api.rule=Host(`api.${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-api.entrypoints=web"
       - "traefik.http.routers.monorepo-api.service=monorepo-api-php-svc"
-      - "traefik.http.routers.monorepo-admin.rule=Host(`admin.${INSTANCE_HOST}`)"
-      - "traefik.http.routers.monorepo-admin.entrypoints=web"
-      - "traefik.http.routers.monorepo-admin.service=monorepo-api-php-svc"
       - "traefik.http.services.monorepo-api-php-svc.loadbalancer.server.port=80"
 
   frontend-node:
@@ -74,14 +71,13 @@ services:
     environment:
       HOSTNAME: "0.0.0.0"
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    # NODE_ENV=production durante só npm ci omite devDependencies (@tailwindcss/postcss é necessário no build).
     command: sh -c "npm ci --include=dev && NODE_ENV=production npm run build && NODE_ENV=production exec ./node_modules/.bin/next start -H 0.0.0.0 -p 3000"
     networks:
       - shared_network_web
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=shared_network_web"
-      - "traefik.http.routers.monorepo-frontend.rule=Host(`app.${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend.rule=Host(`${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-frontend.entrypoints=web"
       - "traefik.http.services.monorepo-frontend.loadbalancer.server.port=3000"
 
