@@ -80,7 +80,7 @@ services:
       - "traefik.http.routers.monorepo-frontend.rule=Host(`${INSTANCE_HOST}`)"
       # - "traefik.http.routers.monorepo-frontend.entrypoints=web"
       - "traefik.http.routers.monorepo-frontend.entrypoints=websecure"
-      - "traefik.http.routers.monorepo-frontend.tls=true"
+      # - "traefik.http.routers.monorepo-frontend.tls=true"
       # - "traefik.http.routers.monorepo-frontend.tls.certresolver=le"
       - "traefik.http.services.monorepo-frontend.loadbalancer.server.port=3000"
 
