@@ -82,7 +82,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=shared_network_web"
-      - "traefik.http.routers.monorepo-frontend-http.rule=Host(`frontend-${INSTANCE_HOST}`)"
+      - "traefik.http.routers.monorepo-frontend-http.rule=Host(`${INSTANCE_HOST}`)"
       - "traefik.http.routers.monorepo-frontend-http.entrypoints=web"
       - "traefik.http.routers.monorepo-frontend-http.service=monorepo-frontend-svc"
       - "traefik.http.routers.monorepo-frontend-https.rule=Host(`frontend-${INSTANCE_HOST}`)"
