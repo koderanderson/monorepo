@@ -91,6 +91,14 @@ services:
       # - "traefik.http.routers.monorepo-frontend-https.tls.certresolver=le"
       - "traefik.http.routers.monorepo-frontend-https.service=monorepo-frontend-svc"
       - "traefik.http.services.monorepo-frontend-svc.loadbalancer.server.port=3000"
+  
+  teste:
+    image: nginx:alpine
+    container_name: html_test
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
 
 networks:
   shared_network_db:
